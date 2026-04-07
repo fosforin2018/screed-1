@@ -183,19 +183,22 @@ async function startPDF(action){
   const reader=new FileReader();
   reader.onloadend=async function(){
     const base64Data=reader.result.split(',')[1];
-    const fileName=pdfData.name;
+    const fileName='Screed1_'+pdfData.name;
     try{
       if(typeof Capacitor!=='undefined'&&Capacitor.Plugins.Filesystem){
-        // === СОХРАНЕНИЕ В ВИДИМУЮ ПАПКУ Screed1 ===
+        // === ИСПОЛЬЗУЕМ PUBLIC DIRECTORY (видимая папка Downloads) ===
         const folderPath='Screed1';
-        // Создаём папку если нет
-        try{await Capacitor.Plugins.Filesystem.mkdir({path:folderPath,directory:Capacitor.Plugins.Filesystem.Directory.ExternalStorage,recursive:true});}catch(e){console.log('Folder exists or using fallback');}
+        const fullPath=folderPath+'/'+fileName;
         
         if(action==='share'){
           // Сохраняем во временную папку для шеринга
-          await Capacitor.Plugins.Filesystem.writeFile({path:folderPath+'/'+fileName,base64Data,directory:Capacitor.Plugins.Filesystem.Directory.ExternalStorage});
-          const uri=await Capacitor.Plugins.Filesystem.getUri({path:folderPath+'/'+fileName,directory:Capacitor.Plugins.Filesystem.Directory.ExternalStorage});
-          // Проверяем, доступен ли Share плагин
+          try{
+            await Capacitor.Plugins.Filesystem.mkdir({path:folderPath,directory:Capacitor.Plugins.Filesystem.Directory.Data,recursive:true});
+          }catch(e){console.log('Folder exists');}
+          
+          await Capacitor.Plugins.Filesystem.writeFile({path:fullPath,data:base64Data,directory:Capacitor.Plugins.Filesystem.Directory.Data});
+          const uri=await Capacitor.Plugins.Filesystem.getUri({path:fullPath,directory:Capacitor.Plugins.Filesystem.Directory.Data});
+          
           if(Capacitor.Plugins.Share){
             await Capacitor.Plugins.Share.share({title:'Документ из Стяжка 1',text:'Лист замера / КП',url:uri.uri,dialogTitle:'Отправить файл'});
             showToast('📤 Отправлено');
@@ -203,9 +206,9 @@ async function startPDF(action){
             showToast('⚠️ Функция "Поделиться" недоступна');
           }
         }else{
-          // Сохраняем в папку Screed1
-          await Capacitor.Plugins.Filesystem.writeFile({path:folderPath+'/'+fileName,base64Data,directory:Capacitor.Plugins.Filesystem.Directory.ExternalStorage});
-          showToast('✅ Сохранено: Внутренняя память/Screed1/'+fileName);
+          // Сохраняем в Documents (видимая папка)
+          await Capacitor.Plugins.Filesystem.writeFile({path:fileName,data:base64Data,directory:Capacitor.Plugins.Filesystem.Directory.Documents});
+          showToast('✅ Сохранено: Внутренняя память/Documents/'+fileName);
         }
       }else{
         // Fallback для браузера
