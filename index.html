@@ -3,221 +3,250 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="theme-color" content="#4b5563">
-    <title>Стяжка — Калькулятор Pro</title>
-    <link rel="stylesheet" href="/assets/css/main.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" crossorigin="anonymous"></script>
+    <title>Стяжка Pro</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@capacitor/core@6/dist/capacitor.js"></script>
+    <style>
+        body { font-family: sans-serif; padding: 20px; background: #f0f2f5; }
+        button { background: #2563eb; color: white; border: none; padding: 12px 20px; border-radius: 10px; font-size: 16px; margin: 5px; }
+        .toast { position: fixed; bottom: 50px; left: 20px; right: 20px; background: #333; color: white; padding: 12px; border-radius: 10px; text-align: center; display: none; z-index: 1000; }
+        .page { display: none; }
+        .page.active { display: block; }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; display: flex; background: white; padding: 10px; }
+        .nav-btn { flex: 1; text-align: center; background: none; color: #666; }
+        .nav-btn.active { color: #2563eb; }
+        .room-card { background: white; padding: 15px; border-radius: 10px; margin-bottom: 10px; }
+        .btn-add-room { background: #10b981; width: 100%; margin-top: 10px; }
+        .summary-card { background: white; padding: 15px; border-radius: 10px; margin-top: 15px; }
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1001; }
+        .modal-overlay.show { display: flex; }
+        .modal-box { background: white; padding: 20px; border-radius: 15px; width: 80%; max-width: 300px; text-align: center; }
+        .modal-btns { display: flex; gap: 10px; margin-top: 15px; justify-content: center; }
+        .modal-btn { padding: 8px 16px; border-radius: 8px; border: none; }
+        .modal-btn-primary { background: #2563eb; color: white; }
+        .modal-btn-success { background: #10b981; color: white; }
+        .pdf-hidden { display: none; }
+        .pdf-sheet { padding: 20px; font-family: sans-serif; }
+    </style>
 </head>
 <body>
-<div class="header">
+
+<div class="page active" id="pageMeasurements">
     <h1>📐 Стяжка Pro</h1>
-    <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">🌙</button>
-</div><div class="page active" id="pageMeasurements">
-    <div class="edit-badge" id="editIndicator">✏️ Режим редактирования</div>
-    <div class="address-block">
-        <div class="form-row">
-            <div class="field-group"><label>📅 Дата замера</label><input type="date" id="measDate"></div>
-            <div class="field-group"><label>👤 Заказчик</label><input type="text" id="clientName" placeholder="Иванов И.И."></div>
-        </div>
-        <div class="field-group"><label>📍 Адрес объекта</label><input type="text" id="addressInput" placeholder="ул. Ленина, д. 15"></div>
-    </div>
     <div id="roomsContainer"></div>
     <button class="btn-add-room" onclick="addRoom()">＋ Добавить комнату</button>
     <div class="summary-card">
-        <h3>📊 Итог (S × h)</h3>
-        <div class="summary-row"><span class="label">Общая площадь</span><span class="value" id="totalArea">0 м²</span></div>
-        <div class="summary-row"><span class="label">Средний слой</span><span class="value" id="avgLayer">0 см</span></div>
-        <div class="summary-row"><span class="label">Объём</span><span class="value" id="totalVolume">0 м³</span></div>
-        <div class="summary-row total"><span class="label">Сумма индексов</span><span class="value" id="totalIndex">0</span></div>
+        <h3>Итог</h3>
+        <div id="totalArea">0 м²</div>
     </div>
-    <div class="actions">
-        <button class="btn" onclick="saveMeasurement()">💾 Сохранить</button>
-        <button class="btn btn-secondary" onclick="clearForm()">🔄 Очистить</button>
-    </div>
-</div>
-
-<div class="page" id="pageCost">
-    <h2 style="margin-bottom:12px; font-size:17px;">💰 Расчёт стоимости</h2>
-    <div id="costResult" style="display:none; margin-top:15px;"></div>
+    <button onclick="saveMeasurement()">💾 Сохранить замер</button>
+    <button onclick="showPDFModal()">📄 Лист замера</button>
 </div>
 
 <div class="page" id="pageHistory">
-    <h2 style="margin-bottom:12px; font-size:17px;">📁 Архив замеров</h2>
-    <ul class="saved-list" id="savedList"></ul>
+    <h1>📁 История</h1>
+    <div id="savedList"></div>
 </div>
 
-<div class="page" id="pageSettings">
-    <h2 style="margin-bottom:12px; font-size:17px;">⚙️ Настройки</h2>
-    <button class="btn" style="background:var(--danger); width:100%; margin-top:10px;" onclick="clearAllData()">🗑 Сбросить всё</button>
+<div class="bottom-nav">
+    <button class="nav-btn active" onclick="switchTab('pageMeasurements')">📐 Замеры</button>
+    <button class="nav-btn" onclick="switchTab('pageHistory')">📁 История</button>
 </div>
+
 <div class="modal-overlay" id="pdfModal">
     <div class="modal-box">
-        <h3 id="modalTitle">Лист замера</h3>
-        <p id="modalText">Нажмите кнопку для создания файла</p>
-        <div class="modal-btns" id="modalActions">
-            <button class="modal-btn modal-btn-primary" onclick="generateAndDownloadPDF('meas', '')">📥 Скачать PDF</button>
-            <button class="modal-btn modal-btn-success" onclick="generateAndSharePDF('meas', '')">📤 Отправить</button>
+        <h3>Лист замера</h3>
+        <div class="modal-btns">
+            <button class="modal-btn modal-btn-primary" onclick="generateAndDownloadPDF()">📥 Сохранить PDF</button>
+            <button class="modal-btn modal-btn-success" onclick="generateAndSharePDF()">📤 Отправить</button>
             <button class="modal-btn" onclick="closeModal()">Отмена</button>
         </div>
     </div>
 </div>
 
-<div class="pdf-hidden" id="pdfMeasTpl">
+<div id="pdfMeasTpl" class="pdf-hidden">
     <div class="pdf-sheet">
-        <h1>📐 ЛИСТ ЗАМЕРА</h1>
-        <div id="pdfMeasAddr"></div>
-        <div id="pdfMeasClient"></div>
-        <div id="pdfMeasArea"></div>
-        <div id="pdfMeasLayer"></div>
-        <div id="pdfMeasGenDate"></div>
+        <h2>📄 Лист замера</h2>
+        <p><strong>Дата:</strong> <span id="pdfDate"></span></p>
+        <p><strong>Общая площадь:</strong> <span id="pdfArea"></span> м²</p>
+        <hr>
+        <p>Документ создан в приложении "Стяжка Pro"</p>
     </div>
 </div>
 
-<nav class="bottom-nav">
-    <button class="nav-btn active" onclick="switchTab('pageMeasurements')"><span class="nav-icon">📐</span>Замеры</button>
-    <button class="nav-btn" onclick="switchTab('pageCost')"><span class="nav-icon">💰</span>Стоимость</button>
-    <button class="nav-btn" onclick="switchTab('pageHistory')"><span class="nav-icon">📁</span>История</button>
-    <button class="nav-btn" onclick="switchTab('pageSettings')"><span class="nav-icon">⚙️</span>Настройки</button>
-</nav>
-<div class="toast" id="toast"></div><script>
-let rooms = [], editingId = null, roomUid = 0, currentCalc = null;
-let corrections = { globalMm: 3, perRoomMm: 0, enabled: true };
+<div class="toast" id="toast"></div>
 
-function showToast(msg) {
-    const t = document.getElementById('toast');
-    if (!t) return alert(msg);
-    t.textContent = msg;
-    t.classList.add('show');
-    clearTimeout(t._t);
-    t._t = setTimeout(() => t.classList.remove('show'), 3000);
-}
+<script>
+    let rooms = [{ id: 'room1', name: 'Комната 1', area: 0, layer: 0 }];
+    let currentMeasurementId = null;
 
-function switchTab(id) {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-}
+    function showToast(msg) {
+        const t = document.getElementById('toast');
+        t.textContent = msg;
+        t.style.display = 'block';
+        setTimeout(() => t.style.display = 'none', 3000);
+    }
 
-function addRoom() {
-    roomUid++;
-    rooms.push({ id: `r_${Date.now()}_${roomUid}`, name: `Комната ${rooms.length + 1}`, area: '', layer: '' });
+    function switchTab(id) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        if (id === 'pageHistory') renderHistory();
+    }
+
+    function addRoom() {
+        rooms.push({ id: 'room' + Date.now(), name: 'Комната ' + (rooms.length + 1), area: 0, layer: 0 });
+        renderRooms();
+    }
+
+    function renderRooms() {
+        const c = document.getElementById('roomsContainer');
+        if (!c) return;
+        c.innerHTML = rooms.map((r, i) => `
+            <div class="room-card">
+                <b>${r.name}</b><br>
+                Площадь: <input type="number" value="${r.area}" onchange="updateRoom('${r.id}', 'area', this.value)"> м²<br>
+                Слой: <input type="number" value="${r.layer}" onchange="updateRoom('${r.id}', 'layer', this.value)"> см
+            </div>
+        `).join('');
+        recalcSummary();
+    }
+
+    function updateRoom(id, field, value) {
+        const r = rooms.find(x => x.id === id);
+        if (r) r[field] = parseFloat(value) || 0;
+        recalcSummary();
+    }
+
+    function recalcSummary() {
+        let totalArea = 0;
+        rooms.forEach(r => totalArea += r.area);
+        document.getElementById('totalArea').innerHTML = `Общая площадь: ${totalArea.toFixed(2)} м²`;
+        return totalArea;
+    }
+
+    function saveMeasurement() {
+        const totalArea = recalcSummary();
+        const data = { id: Date.now().toString(), rooms: JSON.parse(JSON.stringify(rooms)), totalArea, date: new Date().toISOString() };
+        let saved = JSON.parse(localStorage.getItem('measurements') || '[]');
+        saved.push(data);
+        localStorage.setItem('measurements', JSON.stringify(saved));
+        showToast('✅ Сохранено!');
+        renderHistory();
+    }
+
+    function renderHistory() {
+        const saved = JSON.parse(localStorage.getItem('measurements') || '[]');
+        const container = document.getElementById('savedList');
+        if (!container) return;
+        if (saved.length === 0) {
+            container.innerHTML = '<p>Нет сохранённых замеров</p>';
+            return;
+        }
+        container.innerHTML = saved.map(m => `
+            <div class="room-card">
+                <b>📅 ${new Date(m.date).toLocaleDateString()}</b><br>
+                Площадь: ${m.totalArea.toFixed(2)} м²<br>
+                <button onclick="loadMeasurement('${m.id}')">📂 Загрузить</button>
+                <button onclick="deleteMeasurement('${m.id}')">🗑 Удалить</button>
+            </div>
+        `).join('');
+    }
+
+    function loadMeasurement(id) {
+        const saved = JSON.parse(localStorage.getItem('measurements') || '[]');
+        const m = saved.find(x => x.id === id);
+        if (m) {
+            rooms = JSON.parse(JSON.stringify(m.rooms));
+            renderRooms();
+            switchTab('pageMeasurements');
+            showToast('📂 Замер загружен');
+        }
+    }
+
+    function deleteMeasurement(id) {
+        let saved = JSON.parse(localStorage.getItem('measurements') || '[]');
+        saved = saved.filter(x => x.id !== id);
+        localStorage.setItem('measurements', JSON.stringify(saved));
+        renderHistory();
+        showToast('🗑 Удалено');
+    }
+
+    function showPDFModal() {
+        document.getElementById('pdfModal').classList.add('show');
+        const totalArea = recalcSummary();
+        document.getElementById('pdfDate').textContent = new Date().toLocaleString();
+        document.getElementById('pdfArea').textContent = totalArea.toFixed(2);
+    }
+
+    function closeModal() {
+        document.getElementById('pdfModal').classList.remove('show');
+    }
+
+    function blobToBase64(blob) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result.split(',')[1]);
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+        });
+    }
+
+    async function generateAndDownloadPDF() {
+        showToast('⏳ Генерация PDF...');
+        const tpl = document.getElementById('pdfMeasTpl');
+        tpl.style.display = 'block';
+        const opt = {
+            margin: [5,5,5,5],
+            filename: 'ЛистЗамера_' + Date.now() + '.pdf',
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2 },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+        try {
+            const blob = await html2pdf().set(opt).from(tpl).outputPdf('blob');
+            tpl.style.display = 'none';
+            closeModal();
+
+            if (typeof Capacitor !== 'undefined' && Capacitor.isNativePlatform()) {
+                const { Filesystem, Directory, Share } = Capacitor.Plugins;
+                const fileName = opt.filename;
+                const base64 = await blobToBase64(blob);
+                
+                await Filesystem.mkdir({ path: 'PDF', directory: Directory.Data, recursive: true }).catch(() => {});
+                await Filesystem.writeFile({
+                    path: `PDF/${fileName}`,
+                    data: base64,
+                    directory: Directory.Data,
+                    recursive: true
+                });
+                
+                showToast('✅ PDF сохранён! Открываем диалог...');
+                await Share.share({
+                    title: fileName,
+                    text: 'Документ из Стяжка Pro',
+                    dialogTitle: 'Поделиться PDF'
+                });
+            } else {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = opt.filename;
+                a.click();
+                URL.revokeObjectURL(url);
+                showToast('✅ PDF скачан');
+            }
+        } catch (e) {
+            console.error(e);
+            tpl.style.display = 'none';
+            showToast('⚠️ Ошибка: ' + e.message);
+        }
+    }
+
+    async function generateAndSharePDF() {
+        await generateAndDownloadPDF();
+    }
+
     renderRooms();
-}
-
-function renderRooms() {
-    const c = document.getElementById('roomsContainer');
-    if (!c) return;
-    c.innerHTML = rooms.map((r, i) => `<div class="room-card">Комната ${i+1}: <input placeholder="Площадь" value="${r.area}" onchange="updateRoom('${r.id}','area',this.value)"> <input placeholder="Слой" value="${r.layer}" onchange="updateRoom('${r.id}','layer',this.value)"></div>`).join('');
-}
-
-function updateRoom(id, field, value) {
-    const r = rooms.find(x => x.id === id);
-    if (r) r[field] = value;
-    recalcSummary();
-}
-
-function recalcSummary() {
-    let ta = 0, w = 0;
-    rooms.forEach(r => { const a = parseFloat(r.area) || 0, l = parseFloat(r.layer) || 0; ta += a; w += a * l; });
-    const areaEl = document.getElementById('totalArea');
-    if (areaEl) areaEl.textContent = ta.toFixed(2) + ' м²';
-}
-
-function saveMeasurement() { showToast('✅ Сохранено'); }
-function clearForm() { rooms = []; addRoom(); recalcSummary(); }
-function closeModal() { document.getElementById('pdfModal').classList.remove('show'); }
-function blobToBase64(blob) {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onloadend = () => resolve(reader.result.split(',')[1]);
-        reader.onerror = reject;
-        reader.readAsDataURL(blob);
-    });
-}
-
-    alert("PDF функция вызвана! Тип: " + type);
-    console.log("Capacitor плагины:", Object.keys(Capacitor.Plugins));
-    if (!Capacitor.Plugins.Filesystem) alert("Filesystem НЕ ДОСТУПЕН!");
-    if (!Capacitor.Plugins.Share) alert("Share НЕ ДОСТУПЕН!");
-async function generateAndDownloadPDF(type, id) {
-    showToast('⏳ Генерация PDF...');
-    const tpl = document.getElementById('pdfMeasTpl');
-    if (!tpl) { showToast('⚠️ Шаблон не найден'); return; }
-    tpl.style.display = 'block';
-    const opt = {
-        margin: [5,5,5,5],
-        filename: 'ЛистЗамера_' + Date.now() + '.pdf',
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true, logging: false, windowWidth: 800 },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait', compress: true }
-    };
-    try {
-        const blob = await html2pdf().set(opt).from(tpl).outputPdf('blob');
-        tpl.style.display = 'none';
-        closeModal();
-        
-        const { Filesystem, Directory } = Capacitor.Plugins;
-        const fileName = opt.filename;
-        const base64 = await blobToBase64(blob);
-        
-        await Filesystem.mkdir({ path: "Стяжка1", directory: Directory.Data, recursive: true }).catch((e) => { alert("Ошибка создания папки: " + JSON.stringify(e)); });
-        await Filesystem.writeFile({
-            path: `Стяжка1/${fileName}`,
-            data: base64,
-            directory: Directory.Data,
-            recursive: true
-        });
-        showToast(`✅ PDF сохранён в Documents/Стяжка1/${fileName}`);
-    } catch (e) {
-        console.error(e);
-        tpl.style.display = 'none';
-        showToast('⚠️ Ошибка: ' + e.message);
-    }
-}
-
-async function generateAndSharePDF(type, id) {
-    showToast('⏳ Генерация PDF...');
-    const tpl = document.getElementById('pdfMeasTpl');
-    if (!tpl) { showToast('⚠️ Шаблон не найден'); return; }
-    tpl.style.display = 'block';
-    const opt = {
-        margin: [5,5,5,5],
-        filename: 'ЛистЗамера_' + Date.now() + '.pdf',
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true, logging: false, windowWidth: 800 },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait', compress: true }
-    };
-    try {
-        const blob = await html2pdf().set(opt).from(tpl).outputPdf('blob');
-        tpl.style.display = 'none';
-        closeModal();
-        
-        const { Filesystem, Directory, Share } = Capacitor.Plugins;
-        const fileName = opt.filename;
-        const base64 = await blobToBase64(blob);
-        
-        await Filesystem.mkdir({ path: 'Стяжка1', directory: Directory.Documents, recursive: true }).catch(() => {});
-        await Filesystem.writeFile({
-            path: `Стяжка1/${fileName}`,
-            data: base64,
-            directory: Directory.Documents,
-            recursive: true
-        });
-        
-        await Share.share({
-            title: fileName,
-            text: 'Документ из Стяжка Pro',
-            dialogTitle: 'Поделиться PDF'
-        });
-        showToast('📤 PDF отправлен');
-    } catch (e) {
-        console.error(e);
-        tpl.style.display = 'none';
-        showToast('⚠️ Ошибка: ' + e.message);
-    }
-}
-
-function clearAllData() { if (confirm('Удалить все данные?')) localStorage.clear(); }
 </script>
 </body>
 </html>
