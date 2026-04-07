@@ -1,7 +1,7 @@
-{
+
   "appId": "com.screed1.app",
-  "appName": "Стяжка 1",
-  "webDir": "www",
+  "appName": "Стяжка 1", 
+   "webDir": "dist",
   "bundledWebRuntime": false,
   "server": {
     "androidScheme": "https",
