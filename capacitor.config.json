@@ -1,13 +1,10 @@
-
+{
   "appId": "com.screed1.app",
-  "appName": "Стяжка 1", 
-   "webDir": "dist",
+  "appName": "Стяжка 1",
+  "webDir": "www",
   "bundledWebRuntime": false,
   "server": {
     "androidScheme": "https",
     "cleartext": true
-  },
-  "plugins": {
-    "CapacitorHttp": { "enabled": true }
   }
 }
