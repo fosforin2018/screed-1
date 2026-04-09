@@ -1,0 +1,19 @@
+:root {
+  --primary: #4b5563; --primary-dark: #374151;
+  --bg: #f3f4f6; --card: #ffffff;
+  --text: #1f2937; --text-secondary: #6b7280;
+  --border: #e5e7eb; --danger: #ef4444; --success: #10b981; --warn: #f59e0b;
+  --radius: 12px; --shadow: 0 2px 8px rgba(0,0,0,0.05);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --toggle-bg: #cbd5e1; --toggle-active: #4b5563;
+  --input-bg: #f9fafb;
+}
+body.dark {
+  --primary: #9ca3af; --primary-dark: #d1d5db;
+  --bg: #111827; --card: #1f2937;
+  --text: #f9fafb; --text-secondary: #9ca3af;
+  --border: #374151;
+  --shadow: 0 2px 8px rgba(0,0,0,0.3);
+  --toggle-bg: #4b5563; --toggle-active: #9ca3af;
+  --input-bg: #374151;
+}
