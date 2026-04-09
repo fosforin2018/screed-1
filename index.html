@@ -250,3 +250,81 @@ console.log('✅ App loaded');
 </script>
 </body>
 </html>
+<script>
+// === PROFESSIONAL FILE SERVICE ===
+const FileService = {
+  // Конвертация Blob → Base64 (валидация + защита от битых данных)
+  toBase64: async (blob) => {
+    if (!blob || blob.size === 0) throw new Error('Пустой файл');
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const res = reader.result;
+        if (typeof res === 'string' && res.includes(',')) {
+          const pure = res.split(',')[1];
+          if (pure.length < 50) reject(new Error('Данные слишком короткие'));
+          resolve(pure);
+        } else reject(new Error('Неверный формат Blob'));
+      };
+      reader.onerror = () => reject(new Error('Ошибка чтения файла'));
+      reader.readAsDataURL(blob);
+    });
+  },
+
+  // Профессиональное сохранение с fallback-цепочкой
+  save: async (blob, fileName) => {
+    const Filesystem = Capacitor.Plugins?.Filesystem;
+    if (!Filesystem) throw new Error('Плагин Filesystem не загружен');
+
+    // Безопасные константы (решает проблему undefined Directory)
+    const Dir = Filesystem.Directory || { 
+      Documents: 'DOCUMENTS', 
+      Data: 'DATA', 
+      Cache: 'CACHE' 
+    };
+
+    const base64 = await FileService.toBase64(blob);
+    const folder = 'Screed1';
+
+    // Цепочка: Documents → Data → Cache (никогда не падает молча)
+    const targets = [
+      { name: 'Documents', dir: Dir.Documents, userVisible: true },
+      { name: 'Data', dir: Dir.Data, userVisible: false },
+      { name: 'Cache', dir: Dir.Cache, userVisible: false }
+    ];
+
+    for (const t of targets) {
+      try {
+        await Filesystem.mkdir({ path: folder, directory: t.dir, recursive: true }).catch(() => {});
+        await Filesystem.writeFile({ path: `${folder}/${fileName}`, data: base64, directory: t.dir });
+        const uri = await Filesystem.getUri({ path: `${folder}/${fileName}`, directory: t.dir });
+        return { success: true, path: uri.uri, location: t.name, visible: t.userVisible };
+      } catch (err) {
+        console.warn(`[FileService] Failed ${t.name}:`, err.message);
+      }
+    }
+    throw new Error('Все расположения недоступны. Проверьте разрешения в настройках.');
+  }
+};
+
+// Обновлённая startPDF на базе сервиса
+window.startPDF = async function() {
+  if (!pdfData?.blob) return alert('⚠️ PDF не создан');
+  
+  try {
+    alert('📥 Сохранение документа...');
+    const res = await FileService.save(pdfData.blob, pdfData.name);
+    
+    if (res.visible) {
+      alert(`✅ Успешно сохранено!\n\n📁 Внутренняя память / Documents / Screed1 /\n📄 ${pdfData.name}`);
+    } else {
+      alert(`✅ Сохранено во внутреннюю папку приложения.\n\nТочный путь:\n${res.path}`);
+    }
+    if (typeof closeModal === 'function') closeModal();
+  } catch (err) {
+    console.error('[PDF Save]', err);
+    alert(`❌ Ошибка:\n${err.message}`);
+  }
+};
+console.log('✅ Professional FileService initialized');
+</script>
