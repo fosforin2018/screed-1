@@ -1,38 +1,26 @@
 export const Calculator = {
-  // Эффективный слой с учётом поправок
   getEffectiveLayer: (baseCm, corrections) => {
     if (!corrections?.enabled) return baseCm;
     return baseCm + (corrections.globalMm / 10) + (corrections.perRoomMm / 10);
   },
   
-  // Расчёт итогов по комнатам
   calcRooms: (rooms, corrections) => {
     let totalArea = 0, totalVolume = 0, totalIndex = 0;
-    
     rooms.forEach(r => {
       const area = parseFloat(r.area) || 0;
       const layer = Calculator.getEffectiveLayer(parseFloat(r.layer) || 0, corrections);
-      if (area > 0) {
-        totalArea += area;
-        totalIndex += area * layer;
-      }
+      if (area > 0) { totalArea += area; totalIndex += area * layer; }
     });
-    
     const avgLayer = totalArea > 0 ? totalIndex / totalArea : 0;
-    const volume = totalArea * (avgLayer / 100);
-    
-    return { totalArea, avgLayer, totalVolume: volume, totalIndex };
+    return { totalArea, avgLayer, totalVolume: totalArea * (avgLayer / 100), totalIndex };
   },
   
-  // Расчёт стоимости
   calcCost: (area, layer, settings) => {
     const mixKg = area * layer * settings.mixDensity;
     const sandKg = mixKg * (settings.ratio / (settings.ratio + 1));
     const cemKg = mixKg * (1 / (settings.ratio + 1));
-    
     const sandB = Math.ceil(sandKg / settings.sandBagW);
     const cemB = Math.ceil(cemKg / settings.cementBagW);
-    
     const fibKg = (area * settings.fiberG) / 1000;
     
     const costs = {
@@ -51,14 +39,12 @@ export const Calculator = {
       lift: Math.ceil(totalTons) * settings.liftPrice
     };
     
-    const total = Object.values(costs).reduce((a,b) => a+b, 0) + 
-                  Object.values(logistics).reduce((a,b) => a+b, 0);
+    const total = Object.values(costs).reduce((a,b)=>a+b,0) + Object.values(logistics).reduce((a,b)=>a+b,0);
     
     return {
-      ...costs, ...logistics, total,
-      pricePerM2: total / area,
+      ...costs, ...logistics, total, pricePerM2: total / area,
       details: { sandB, cemB, fibKg, totalTons, trips }
     };
   }
 };
-console.log('✅ Calculator service loaded');
+console.log('✅ Calculator loaded');

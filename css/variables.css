@@ -1,13 +1,20 @@
 :root {
+  /* Цвета */
   --primary: #4b5563; --primary-dark: #374151;
   --bg: #f3f4f6; --card: #ffffff;
   --text: #1f2937; --text-secondary: #6b7280;
   --border: #e5e7eb; --danger: #ef4444; --success: #10b981; --warn: #f59e0b;
+  
+  /* Размеры */
   --radius: 12px; --shadow: 0 2px 8px rgba(0,0,0,0.05);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
+  
+  /* Компоненты */
   --toggle-bg: #cbd5e1; --toggle-active: #4b5563;
   --input-bg: #f9fafb;
 }
+
+/* Тёмная тема */
 body.dark {
   --primary: #9ca3af; --primary-dark: #d1d5db;
   --bg: #111827; --card: #1f2937;
@@ -16,4 +23,11 @@ body.dark {
   --shadow: 0 2px 8px rgba(0,0,0,0.3);
   --toggle-bg: #4b5563; --toggle-active: #9ca3af;
   --input-bg: #374151;
+}
+
+/* PDF переменные (не зависят от темы) */
+:root {
+  --pdf-bg: #ffffff; --pdf-text: #000000;
+  --pdf-border: #4b5563; --pdf-muted: #6b7280;
+  --pdf-accent: #eff6ff; --pdf-accent-text: #1e40af;
 }

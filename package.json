@@ -1,6 +1,6 @@
 {
-  "name": "screed-1",
-  "version": "1.0.0",
+  "name": "screed-pro",
+  "version": "2.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -8,13 +8,13 @@
     "preview": "vite preview"
   },
   "devDependencies": {
-    "vite": "^5.0.0"
+    "vite": "^5.4.0",
+    "@capacitor/cli": "^6.0.0"
   },
   "dependencies": {
-    "@capacitor/android": "^6.0.0",
-    "@capacitor/cli": "^6.0.0",
     "@capacitor/core": "^6.0.0",
     "@capacitor/filesystem": "^6.0.0",
-    "@capacitor/share": "^6.0.0"
+    "@capacitor/share": "^6.0.0",
+    "html2pdf.js": "^0.10.1"
   }
 }

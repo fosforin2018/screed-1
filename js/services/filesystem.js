@@ -1,5 +1,7 @@
-export const FilesystemService = {
-  // Конвертация Blob → чистый Base64
+import { Config } from '../config.js';
+
+export const FileService = {
+  // Blob → чистый Base64 (убираем заголовок data:...)
   toBase64: async (blob) => {
     if (!blob || blob.size === 0) throw new Error('Пустой файл');
     return new Promise((resolve, reject) => {
@@ -17,18 +19,20 @@ export const FilesystemService = {
     });
   },
 
-  // Сохранение с fallback-цепочкой
+  // Сохранение с fallback: Documents → Data
   save: async (blob, fileName) => {
     const F = Capacitor.Plugins?.Filesystem;
     if (!F) throw new Error('Filesystem плагин не загружен');
     
-    const D = F.Directory || { Documents: 'DOCUMENTS', Data: 'DATA', Cache: 'CACHE' };
-    const b64 = await FilesystemService.toBase64(blob);
+    // Безопасные константы
+    const D = F.Directory || { Documents: 'DOCUMENTS', Data: 'DATA' };
+    const b64 = await FileService.toBase64(blob);
     const folder = Config.folderName;
     
+    // Пробуем публичную папку, потом внутреннюю
     const targets = [
-      { n: 'Documents', d: D.Documents, v: true },
-      { n: 'Data', d: D.Data, v: false }
+      { n: 'Documents', d: D.Documents, visible: true },
+      { n: 'Data', d: D.Data, visible: false }
     ];
 
     for (const t of targets) {
@@ -36,10 +40,10 @@ export const FilesystemService = {
         await F.mkdir({ path: folder, directory: t.d, recursive: true }).catch(()=>{});
         await F.writeFile({ path: `${folder}/${fileName}`,  b64, directory: t.d });
         const uri = await F.getUri({ path: `${folder}/${fileName}`, directory: t.d });
-        return { path: uri.uri, visible: t.v, name: t.n };
+        return { path: uri.uri, visible: t.visible, name: t.n };
       } catch (e) { console.warn(`Save ${t.n} failed:`, e.message); }
     }
-    throw new Error('Нет доступа к хранилищу');
+    throw new Error('Нет доступа к хранилищу. Проверьте разрешения.');
   },
 
   // Запрос разрешений (Android)
@@ -55,4 +59,4 @@ export const FilesystemService = {
     }
   }
 };
-console.log('✅ FilesystemService loaded');
+console.log('✅ FileService loaded');

@@ -1,6 +1,6 @@
 export const Config = {
   appName: 'Стяжка Pro',
-  version: '8.0.0',
+  version: '2.0.0',
   storageKey: 'screed_final',
   folderName: 'Стяжка1',
   defaultSettings: {
@@ -14,4 +14,4 @@ export const Config = {
     logoUrl: '', masterName: ''
   }
 };
-console.log(`✅ ${Config.appName} v${Config.version} config loaded`);
+console.log(`✅ ${Config.appName} v${Config.version} loaded`);

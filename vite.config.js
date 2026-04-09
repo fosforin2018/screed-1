@@ -1,11 +1,12 @@
 import { defineConfig } from 'vite';
 export default defineConfig({
-  root: '.',
-  base: './',
+  root: 'src',
   build: {
-    outDir: 'www',
+    outDir: '../www',
     emptyOutDir: true,
-    target: 'es2020'
+    rollupOptions: {
+      input: { main: 'src/index.html' }
+    }
   },
-  server: { host: '0.0.0.0', port: 3000 }
+  server: { port: 3000 }
 });
