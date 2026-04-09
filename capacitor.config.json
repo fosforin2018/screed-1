@@ -1,10 +1,14 @@
 {
   "appId": "com.screed.pro",
   "appName": "Стяжка Pro",
-  "webDir": "www",
+  "webDir": "www",                // Vite собирает в www/
   "bundledWebRuntime": false,
   "plugins": {
     "Filesystem": { "allowWriteToPublicStorage": true }
   },
-  "android": { "allowMixedContent": true, "captureInput": true }
+  "android": {
+    "allowMixedContent": true,
+    "captureInput": true,
+    "webContentsDebuggingEnabled": true
+  }
 }
