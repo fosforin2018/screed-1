@@ -4,6 +4,6 @@ export default defineConfig({
   build: {
     outDir: '../www',
     emptyOutDir: true
-    // Убрали rollupOptions.input — Vite сам найдёт index.html
-  }
+  },
+  server: { port: 3000, host: true }
 });
