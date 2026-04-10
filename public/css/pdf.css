@@ -1,0 +1,27 @@
+.pdf-hidden { position: absolute; left: -9999px; }
+.pdf-sheet { background: white; padding: 20px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 800px; margin: 0 auto; color: #000; page-break-after: always; }
+.pdf-sheet-header, .pdf-meas-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #4b5563; padding-bottom: 8px; margin-bottom: 12px; }
+.pdf-sheet-header h1, .pdf-meas-header h1 { color: #4b5563; font-size: 18px; margin: 0; }
+.pdf-sheet-header .sub, .pdf-meas-header .sub { color: #6b7280; font-size: 11px; text-align: right; }
+.pdf-info-strip { display: flex; gap: 8px; margin-bottom: 12px; padding: 8px 10px; background: #f9fafb; border-radius: 6px; border: 1px solid #e5e7eb; }
+.pdf-info-strip-item { flex: 1; text-align: center; }
+.pdf-info-strip-item .l { font-size: 9px; color: #6b7280; text-transform: uppercase; margin-bottom: 2px; }
+.pdf-info-strip-item .v { font-size: 13px; font-weight: 700; color: #1f2937; }
+.pdf-info { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; margin-bottom: 10px; }
+.pdf-info div { background: #f3f4f6; padding: 6px; border-radius: 4px; }
+.pdf-info .l { font-size: 9px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; }
+.pdf-info .v { font-size: 12px; font-weight: 600; color: #111; }
+.pdf-room-table { width: 100%; border-collapse: collapse; font-size: 11px; margin: 8px 0; page-break-inside: avoid; }
+.pdf-room-table th { background: #4b5563; color: #fff; padding: 5px 4px; text-align: left; font-size: 10px; }
+.pdf-room-table td { padding: 5px 4px; border-bottom: 1px solid #e5e7eb; color: #333; }
+.pdf-room-table td:last-child { text-align: right; font-weight: 600; }
+.pdf-corr-block { background: #fffbeb; border: 1px solid #f59e0b; border-radius: 4px; padding: 8px; margin: 8px 0; font-size: 11px; color: #92400e; }
+.pdf-corr-block h4 { margin-bottom: 3px; color: #b45309; font-size: 12px; }
+.pdf-total-box { text-align: right; margin-top: 8px; font-weight: 700; color: #4b5563; }
+.pdf-footer { margin-top: 15px; padding-top: 8px; border-top: 1px solid #e5e7eb; font-size: 9px; color: #6b7280; display: flex; justify-content: space-between; }
+.pdf-logo-area { text-align: right; margin-top: 10px; position: relative; z-index: 10; }
+.pdf-logo-area img { max-width: 150px; max-height: 80px; object-fit: contain; opacity: 0.9; display: block; }
+.pdf-logo-area .sig-line { border-top: 1px solid #000; display: inline-block; width: 140px; margin-top: 30px; padding-top: 4px; font-size: 10px; color: #666; text-align: center; }
+#pdfTotalRow { background-color: #eff6ff; font-weight: bold; }
+#pdfTotalRow td:first-child { padding: 12px 4px; font-size: 14px; color: #1e3a8a; border-top: 2px solid #2563eb; }
+#pdfCostTotal { padding: 12px 4px; font-size: 18px; font-weight: 800; color: #1e40af; text-align: right; border-top: 2px solid #2563eb; }

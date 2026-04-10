@@ -2,21 +2,16 @@ import { defineConfig } from 'vite';
 import { resolve } from 'path';
 
 export default defineConfig({
-  // === ПРОФЕССИОНАЛЬНАЯ НАСТРОЙКА ===
-  root: resolve(__dirname, 'src'),  // Абсолютный путь к src/
+  root: resolve(__dirname, 'src'),
   
-  // publicDir относительно root
-  publicDir: resolve(__dirname, 'public'),  // Абсолютный путь к public/
+  // publicDir копируется как есть в www/
+  publicDir: resolve(__dirname, 'public'),
   
   build: {
-    // outDir относительно project root (не src!)
-    outDir: resolve(__dirname, 'www'),  // Абсолютный путь к www/
+    outDir: resolve(__dirname, 'www'),
     emptyOutDir: true,
-    
     rollupOptions: {
-      input: {
-        main: resolve(__dirname, 'src/index.html')  // Абсолютный путь к entry point
-      },
+      input: { main: resolve(__dirname, 'src/index.html') },
       output: {
         entryFileNames: 'assets/[name]-[hash].js',
         chunkFileNames: 'assets/[name]-[hash].js',
@@ -25,11 +20,6 @@ export default defineConfig({
     }
   },
   
-  server: { 
-    port: 3000, 
-    host: true,
-    fs: { allow: [resolve(__dirname, '..')] }
-  },
-  
+  server: { port: 3000, host: true, fs: { allow: [resolve(__dirname, '..')] } },
   optimizeDeps: { exclude: ['@capacitor/core'] }
 });
