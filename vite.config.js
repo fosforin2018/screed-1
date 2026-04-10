@@ -1,15 +1,20 @@
 import { defineConfig } from 'vite';
+
 export default defineConfig({
-  // root по умолчанию = корень проекта (где лежит index.html)
-  publicDir: 'public',  // Статика копируется из public/ в www/
+  root: 'src',
+  publicDir: '../public',
   build: {
-    outDir: 'www',      // Сборка в www/ в корне проекта
-    emptyOutDir: true,  // Очищать www перед сборкой
+    outDir: '../www',
+    emptyOutDir: true,
     rollupOptions: {
-      input: {
-        main: 'index.html'  // Точка входа: ./index.html
+      input: { main: './index.html' },
+      output: {
+        entryFileNames: 'assets/[name]-[hash].js',
+        chunkFileNames: 'assets/[name]-[hash].js',
+        assetFileNames: 'assets/[name]-[hash].[ext]'
       }
     }
   },
-  server: { port: 3000, host: true }
+  server: { port: 3000, host: true, fs: { allow: ['..'] } },
+  optimizeDeps: { exclude: ['@capacitor/core'] }
 });

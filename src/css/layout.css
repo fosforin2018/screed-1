@@ -1,17 +1,26 @@
+/* Header */
 .header { background: var(--card); color: var(--text); padding: 14px 20px; text-align: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 6px rgba(0,0,0,0.1); display: flex; justify-content: center; align-items: center; gap: 10px; }
 .header h1 { font-size: 17px; font-weight: 700; }
 .theme-toggle { background: var(--input-bg); border: 1px solid var(--border); border-radius: 20px; padding: 6px 12px; font-size: 16px; cursor: pointer; transition: 0.2s; color: var(--text); }
 .theme-toggle:active { transform: scale(0.95); }
+
+/* Страницы */
 .page { display: none; padding: 16px; max-width: 640px; margin: 0 auto; animation: fadeIn 0.25s ease; }
 .page.active { display: block; }
+
+/* Сетка форм */
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
 .correction-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 8px; }
 .correction-grid label { display: block; font-size: 11px; margin-bottom: 4px; }
+
+/* Комнаты */
 .room-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
 .room-number { font-weight: 700; font-size: 14px; color: var(--primary); }
 .btn-remove { background: rgba(239,68,68,0.1); color: var(--danger); border: none; width: 28px; height: 28px; border-radius: 6px; font-size: 16px; cursor: pointer; transition: 0.2s; }
 .room-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .room-result { margin-top: 10px; padding: 8px 12px; background: rgba(75,85,99,0.05); border-radius: 6px; font-size: 13px; color: var(--primary); font-weight: 600; text-align: right; border-left: 3px solid var(--primary); }
+
+/* Итоговая карточка */
 .summary-card { background: var(--primary); color: #fff; border-radius: var(--radius); padding: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); margin-bottom: 18px; }
 .summary-card h3 { font-size: 13px; font-weight: 500; opacity: 0.85; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
 .summary-row { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,0.2); }
@@ -19,8 +28,12 @@
 .summary-row .label { font-size: 13px; opacity: 0.9; }
 .summary-row .value { font-size: 15px; font-weight: 700; }
 .summary-row.total .value { font-size: 20px; }
+
+/* Кнопки действий */
 .actions { display: flex; gap: 10px; margin-bottom: 18px; }
 .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+
+/* История */
 .saved-list { list-style: none; }
 .saved-address { font-weight: 700; font-size: 15px; margin-bottom: 2px; }
 .saved-client { font-size: 13px; color: var(--text); margin-bottom: 2px; }
@@ -31,6 +44,8 @@
 .btn-calc { background: rgba(59,130,246,0.15); color: #2563eb; }
 .btn-del { background: rgba(239,68,68,0.15); color: #ef4444; }
 .btn-pdf-m { background: rgba(16,185,129,0.15); color: #059669; }
+
+/* Расчёт стоимости */
 .cost-list { max-height: 50vh; overflow-y: auto; }
 .cost-item { background: var(--card); border-radius: 10px; padding: 12px; margin-bottom: 8px; border-left: 3px solid var(--border); cursor: pointer; transition: 0.2s; }
 .cost-item:hover { border-left-color: var(--primary); transform: translateX(2px); }
@@ -39,17 +54,28 @@
 .cost-summary { background: rgba(75,85,99,0.05); border: 2px solid var(--primary); border-radius: 10px; padding: 14px; margin-bottom: 14px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; text-align: center; }
 .cost-summary-item .label { font-size: 11px; color: var(--text-secondary); margin-bottom: 3px; }
 .cost-summary-item .value { font-size: 16px; font-weight: 700; color: var(--primary); }
+
+/* Таблицы */
 .cost-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 10px; }
 .cost-table th { text-align: left; color: var(--text-secondary); font-weight: 600; font-size: 10px; text-transform: uppercase; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
 .cost-table td { padding: 7px 0; border-bottom: 1px solid var(--border); }
 .cost-table td:last-child { text-align: right; font-weight: 600; }
 .cost-table .total-row td { border-top: 2px solid var(--primary); padding-top: 10px; font-weight: 800; font-size: 15px; color: var(--primary); }
+
+/* Настройки */
 .setting-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); }
 .setting-row:last-child { border-bottom: none; }
 .setting-row input { width: 110px; text-align: right; font-size: 14px; }
 .io-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+
+/* Навигация */
 .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--card); border-top: 1px solid var(--border); display: flex; z-index: 200; padding-bottom: var(--safe-bottom); }
 .nav-btn { flex: 1; padding: 8px 4px 5px; border: none; background: none; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 2px; color: var(--text-secondary); transition: 0.2s; font-size: 10px; font-weight: 600; }
 .nav-btn.active { color: var(--primary); }
 .nav-btn .nav-icon { font-size: 20px; }
-@media (max-width: 480px) { .form-row, .correction-grid, .cost-summary { grid-template-columns: 1fr; } .btn-group { grid-template-columns: 1fr; } }
+
+/* Адаптив */
+@media (max-width: 480px) {
+  .form-row, .correction-grid, .cost-summary { grid-template-columns: 1fr; }
+  .btn-group { grid-template-columns: 1fr; }
+}
