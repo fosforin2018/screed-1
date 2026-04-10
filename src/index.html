@@ -1,76 +1,76 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Стяжка Pro</title>
-  
-  <!-- Подключаем стили -->
-  <link rel="stylesheet" href="css/styles.css">
-  
-  <!-- Библиотеки -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@capacitor/core@6/dist/capacitor.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Стяжка — Калькулятор Pro</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@capacitor/core@6/dist/capacitor.js"></script>
+<style>
+:root{--primary:#4b5563;--primary-dark:#374151;--bg:#f3f4f6;--card:#ffffff;--text:#1f2937;--text-secondary:#6b7280;--border:#e5e7eb;--danger:#ef4444;--success:#10b981;--radius:12px;--shadow:0 2px 8px rgba(0,0,0,0.05);--safe-bottom:env(safe-area-inset-bottom,0px)}
+body.dark{--primary:#9ca3af;--bg:#111827;--card:#1f2937;--text:#f9fafb}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:calc(75px + var(--safe-bottom))}
+.header{background:var(--card);padding:14px 20px;text-align:center;position:sticky;top:0;z-index:100;box-shadow:0 2px 6px rgba(0,0,0,0.1)}
+.header h1{font-size:17px;font-weight:700}
+.page{display:none;padding:16px;max-width:640px;margin:0 auto}
+.page.active{display:block}
+input,select{width:100%;padding:10px 12px;border:2px solid var(--border);border-radius:10px;font-size:14px;background:#f9fafb;margin-bottom:8px}
+.btn{width:100%;padding:12px;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;background:var(--primary);color:#fff;margin:6px 0}
+.btn:active{transform:scale(0.98)}
+.btn-secondary{background:var(--card);color:var(--text);border:2px solid var(--border)}
+.btn-success{background:var(--success);color:#fff}
+.card{background:var(--card);border-radius:var(--radius);padding:14px;box-shadow:var(--shadow);margin-bottom:10px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+.field-group label{display:block;font-size:12px;color:var(--text-secondary);margin-bottom:5px}
+.summary-card{background:var(--primary);color:#fff;padding:16px;border-radius:var(--radius);margin-bottom:18px}
+.summary-row{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.2)}
+.summary-row:last-child{border-bottom:none}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--border);display:flex;z-index:200;padding-bottom:var(--safe-bottom)}
+.nav-btn{flex:1;padding:8px;border:none;background:none;text-align:center;cursor:pointer;color:var(--text-secondary)}
+.nav-btn.active{color:var(--primary)}</style>
 </head>
 <body>
-  <div class="header"><h2>📐 Стяжка Pro</h2></div>
-
-  <!-- Страница замеров -->
-  <div class="page active" id="pMeas">
-    <div class="card">
-      <label>📍 Адрес</label><input id="addr" placeholder="Улица, дом">
-      <label>👤 Заказчик</label><input id="client" placeholder="Иванов И.И.">
-      <label>📅 Дата</label><input type="date" id="date">
-    </div>
-    <div id="rooms"></div>
-    <button class="btn btn-p" onclick="addRoom()">+ Комната</button>
-    <div class="card">
-      <div>Площадь: <b id="tArea">0 м²</b></div>
-      <div>Слой: <b id="tLayer">0 см</b></div>
-      <div>Объём: <b id="tVol">0 м³</b></div>
-    </div>
-    <button class="btn btn-p" onclick="saveMeas()">💾 Сохранить замер</button>
-    <button class="btn btn-s" onclick="openPDFModal('measure')">📄 Лист замера</button>
-  </div>
-
-  <!-- Страница стоимости -->
-  <div class="page" id="pCost">
-    <div class="card"><h3>💰 Расчёт стоимости</h3><p>Выберите замер из истории для расчёта.</p></div>
-  </div>
-
-  <!-- Страница истории -->
-  <div class="page" id="pHist">
-    <div class="card"><h3>📁 Архив</h3><ul id="list" style="list-style:none"></ul></div>
-  </div>
-
-  <!-- Страница настроек -->
-  <div class="page" id="pSet">
-    <div class="card"><h3>⚙️ Настройки</h3><p>Здесь будут цены и параметры.</p></div>
-  </div>
-
-  <!-- Модальное окно PDF -->
-  <div class="modal" id="pdfModal">
-    <div class="modal-box">
-      <h3 id="mTitle">Документ</h3>
-      <p id="mText">Готово к сохранению</p>
-      <button class="btn btn-s" onclick="startPDF()">📥 Сохранить в Screed1</button>
-      <button class="btn" onclick="closeModal()">Отмена</button>
-    </div>
-  </div>
-
-  <!-- Навигация -->
-  <nav class="nav">
-    <button class="act" onclick="go('pMeas',this)">📐 Замеры</button>
-    <button onclick="go('pCost',this)">💰 Стоимость</button>
-    <button onclick="go('pHist',this)">📁 История</button>
-    <button onclick="go('pSet',this)">⚙️ Настройки</button>
-  </nav>
-  
-  <div class="toast" id="toast"></div>
-
-  <!-- Подключаем JS файлы (порядок важен!) -->
-  <script src="js/config.js"></script>
-  <script src="js/fileService.js"></script>
-  <script src="js/app.js"></script>
+<div class="header"><h1>📐 Стяжка Pro</h1></div>
+<div class="page active" id="pageMeasurements">
+<div class="card">
+<div class="form-row">
+<div class="field-group"><label>📅 Дата</label><input type="date" id="measDate"></div>
+<div class="field-group"><label>👤 Заказчик</label><input type="text" id="clientName" placeholder="Иванов И.И."></div>
+</div>
+<div class="field-group"><label>📍 Адрес</label><input type="text" id="addressInput" placeholder="ул. Ленина, д. 15"></div>
+</div>
+<div id="roomsContainer"></div>
+<button class="btn" onclick="addRoom()">＋ Добавить комнату</button>
+<div class="card summary-card">
+<h3>📊 Итог</h3>
+<div class="summary-row"><span>Площадь</span><span id="totalArea">0 м²</span></div>
+<div class="summary-row"><span>Слой</span><span id="avgLayer">0 см</span></div>
+<div class="summary-row"><span>Объём</span><span id="totalVolume">0 м³</span></div>
+</div>
+<button class="btn" onclick="saveMeasurement()">💾 Сохранить</button>
+<button class="btn btn-secondary" onclick="showMeasPDFModal()">📄 Лист замера</button>
+</div>
+<div class="page" id="pageCost"><div class="card"><h2>💰 Расчёт стоимости</h2><p>Выберите замер из истории</p></div></div>
+<div class="page" id="pageHistory"><div class="card"><h2>📁 Архив</h2><ul id="savedList"></ul></div></div>
+<div class="page" id="pageSettings"><div class="card"><h2>⚙️ Настройки</h2><p>Здесь будут цены</p></div></div>
+<nav class="bottom-nav">
+<button class="nav-btn active" onclick="switchTab('pageMeasurements')">📐 Замеры</button>
+<button class="nav-btn" onclick="switchTab('pageCost')">💰 Стоимость</button>
+<button class="nav-btn" onclick="switchTab('pageHistory')">📁 История</button>
+<button class="nav-btn" onclick="switchTab('pageSettings')">⚙️ Настройки</button>
+</nav>
+<script>
+let rooms=[],editingId=null,roomUid=0;
+document.addEventListener('DOMContentLoaded',()=>{document.getElementById('measDate').value=new Date().toISOString().split('T')[0];addRoom();});
+function switchTab(id){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));event.target.classList.add('active');if(id==='pageHistory')renderHistory();}
+function addRoom(){roomUid++;rooms.push({id:'r_'+Date.now(),name:'Комната '+(rooms.length),area:0,layer:0});renderRooms();recalcSummary();}
+function renderRooms(){document.getElementById('roomsContainer').innerHTML=rooms.map((r,i)=>'<div class="card"><b>'+(i+1)+'. '+r.name+'</b><div class="form-row"><div class="field-group"><label>Площадь (м²)</label><input type="number" step="0.01" value="'+r.area+'" oninput="updateRoom(\''+r.id+'\',\'area\',this.value)"></div><div class="field-group"><label>Слой (см)</label><input type="number" step="0.1" value="'+r.layer+'" oninput="updateRoom(\''+r.id+'\',\'layer\',this.value)"></div></div></div>').join('');}
+function updateRoom(id,f,v){const r=rooms.find(x=>x.id===id);if(r){r[f]=parseFloat(v)||0;recalcSummary();}}
+function recalcSummary(){let ta=0,w=0;rooms.forEach(r=>{if(r.area>0){ta+=r.area;w+=r.area*r.layer;}});const avg=ta>0?w/ta:0;document.getElementById('totalArea').textContent=ta.toFixed(1)+' м²';document.getElementById('avgLayer').textContent=avg.toFixed(1)+' см';document.getElementById('totalVolume').textContent=(ta*(avg/100)).toFixed(2)+' м³';}
+function saveMeasurement(){const addr=document.getElementById('addressInput').value;if(!addr)return alert('Введите адрес');let db=JSON.parse(localStorage.getItem('screed_final')||'[]');db.push({id:'m_'+Date.now(),address:addr,client:document.getElementById('clientName').value,rooms:[...rooms],totalArea:parseFloat(document.getElementById('totalArea').textContent)});localStorage.setItem('screed_final',JSON.stringify(db));alert('✅ Сохранено');renderHistory();}
+function renderHistory(){const db=JSON.parse(localStorage.getItem('screed_final')||'[]');document.getElementById('savedList').innerHTML=db.map(m=>'<li class="card"><b>'+m.address+'</b><br>'+m.totalArea+' м²</li>').join('');}
+function showMeasPDFModal(){alert('📄 PDF (упрощённая версия)');}
+</script>
 </body>
 </html>
