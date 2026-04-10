@@ -576,46 +576,6 @@ async function requestStoragePermission() {
     return true;
 }
 
-async function savePDFToDocuments(blob, fileName) {
-    if (typeof Capacitor === 'undefined' || !Capacitor.isNativePlatform()) {
-        // Веб-версия: просто скачиваем
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = fileName;
-        a.click();
-        URL.revokeObjectURL(url);
-        showToast('✅ PDF скачан');
-        return true;
-    }
-    
-    try {
-        const { Filesystem, Directory } = Capacitor.Plugins;
-        const base64 = await blobToBase64(blob);
-        
-        // Создаём папку Стяжка1 в Documents
-        await Filesystem.mkdir({
-            path: 'Стяжка1',
-            directory: Directory.Documents,
-            recursive: true
-        }).catch(() => {});
-        
-        // Сохраняем файл
-        await Filesystem.writeFile({
-            path: `Стяжка1/${fileName}`,
-            data: base64,
-            directory: Directory.Documents,
-            recursive: true
-        });
-        
-        showToast(`✅ PDF сохранён в Documents/Стяжка1/${fileName}`);
-        return true;
-    } catch (e) {
-        console.error('Save error:', e);
-        showToast('⚠️ Не удалось сохранить: ' + e.message);
-        return false;
-    }
-}
 
 function blobToBase64(blob) {
     return new Promise((resolve, reject) => {
