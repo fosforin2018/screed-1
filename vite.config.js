@@ -1,14 +1,9 @@
 import { defineConfig } from 'vite';
 export default defineConfig({
-  root: 'src',                    // Исходники в src/
+  root: 'src',
   build: {
-    outDir: '../www',             // Сборка в www/ (на уровень выше)
-    emptyOutDir: true,
-    rollupOptions: {
-      input: {
-        main: './index.html'      // ✅ Путь ОТНОСИТЕЛЬНО root: 'src' → src/index.html
-      }
-    }
-  },
-  server: { port: 3000, host: true }
+    outDir: '../www',
+    emptyOutDir: true
+    // Убрали rollupOptions.input — Vite сам найдёт index.html
+  }
 });
