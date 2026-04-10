@@ -1,12 +1,14 @@
 import { defineConfig } from 'vite';
 export default defineConfig({
-  root: 'src',
-  publicDir: '../public',  // Копирует public/ в www/
+  root: 'src',                    // Исходники в src/
+  publicDir: '../public',         // Статика из public/ копируется в www/
   build: {
-    outDir: '../www',
-    emptyOutDir: true,
+    outDir: '../www',             // Сборка в www/ (на уровень выше)
+    emptyOutDir: true,            // Очищать www перед сборкой
     rollupOptions: {
-      input: { main: 'index.html' }
+      input: {
+        main: './index.html'      // Путь ОТНОСИТЕЛЬНО root: 'src' → src/index.html
+      }
     }
   },
   server: { port: 3000, host: true }
