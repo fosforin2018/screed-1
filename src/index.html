@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Стяжка — Калькулятор Pro</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<!-- handlers inserted -->
 <style>
   :root {
     --primary: #4b5563; --primary-dark: #374151;
@@ -295,9 +296,9 @@
     <h3 id="modalTitle">Лист замера</h3>
     <p id="modalText">Нажмите кнопку для создания файла</p>
     <div class="modal-btns" id="modalActions">
-      <button class="modal-btn modal-btn-primary" onclick="startPDF('download')">📥 Скачать PDF</button>
-      <button class="modal-btn modal-btn-success" onclick="startPDF('share')">📤 Отправить</button>
-      <button class="modal-btn" onclick="closeModal()">Отмена</button>
+      <button class="modal-btn modal-btn-primary" onclick="window.startPDF('download')">📥 Скачать PDF</button>
+      <button class="modal-btn modal-btn-success" onclick="window.startPDF('share')">📤 Отправить</button>
+      <button class="modal-btn" onclick="document.getElementById('pdfModal').classList.remove('show')">Отмена</button>
     </div>
   </div>
 </div>
@@ -627,5 +628,6 @@ async function startPDF(action) {
 }
 
 </script>
+<!-- handlers inserted -->
 </body>
 </html>
