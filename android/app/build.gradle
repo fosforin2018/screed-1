@@ -1,10 +1,10 @@
 apply plugin: 'com.android.application'
 
 android {
-    namespace "com.screed1.app"
+    namespace "com.screed.pro"
     compileSdk rootProject.ext.compileSdkVersion
     defaultConfig {
-        applicationId "com.screed1.app"
+        applicationId "com.screed.pro"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

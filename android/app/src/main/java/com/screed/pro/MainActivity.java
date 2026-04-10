@@ -1,4 +1,4 @@
-package com.screed1.app;
+package com.screed.pro;
 
 import com.getcapacitor.BridgeActivity;
 
