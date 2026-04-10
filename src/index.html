@@ -4,7 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Стяжка — Калькулятор Pro</title>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
 <script src="https://cdn.jsdelivr.net/npm/@capacitor/core@6/dist/capacitor.js"></script>
 <style>
   :root { --primary: #4b5563; --primary-dark: #374151; --bg: #f3f4f6; --card: #ffffff; --text: #1f2937; --text-secondary: #6b7280; --border: #e5e7eb; --danger: #ef4444; --success: #10b981; --warn: #f59e0b; --radius: 12px; --shadow: 0 2px 8px rgba(0,0,0,0.05); --safe-bottom: env(safe-area-inset-bottom, 0px); --toggle-bg: #cbd5e1; --toggle-active: #4b5563; --input-bg: #f9fafb; }
@@ -188,6 +190,7 @@ async function requestStoragePermission() {if (typeof Capacitor !== 'undefined' 
 async function savePDFToDocuments(blob, fileName) {if (typeof Capacitor === 'undefined' || !Capacitor.isNativePlatform()) {const url = URL.createObjectURL(blob);const a = document.createElement('a');a.href = url;a.download = fileName;a.click();URL.revokeObjectURL(url);showToast('✅ PDF скачан');return true;}try {const { Filesystem, Directory } = Capacitor.Plugins;const base64 = await blobToBase64(blob);await Filesystem.mkdir({path: 'Стяжка1',directory: Directory.Documents,recursive: true}).catch(() => {});await Filesystem.writeFile({path: `Стяжка1/${fileName}`, base64,directory: Directory.Documents,recursive: true});showToast(`✅ PDF сохранён в Documents/Стяжка1/${fileName}`);return true;} catch (e) {console.error('Save error:', e);showToast('⚠️ Не удалось сохранить: ' + e.message);return false;}}
 function blobToBase64(blob) {return new Promise((resolve, reject) => {const reader = new FileReader();reader.onloadend = () => resolve(reader.result.split(',')[1]);reader.onerror = reject;reader.readAsDataURL(blob);});}
 async function startPDF(action) {if (!pdfData.blob) {showToast('⚠️ PDF ещё не готов');return;}if (action === 'download') {const hasPermission = await requestStoragePermission();if (!hasPermission) {action = 'share';}}const file = new File([pdfData.blob], pdfData.name, { type: 'application/pdf' });if (action === 'share') {if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {try {await navigator.share({ files: [file], title: pdfData.name });showToast('📤 PDF отправлен');closeModal();return;} catch(e) {console.log('Share cancelled or failed:', e);}}await savePDFToDocuments(pdfData.blob, pdfData.name);closeModal();} else if (action === 'download') {await savePDFToDocuments(pdfData.blob, pdfData.name);closeModal();}}
+
 </script>
 </body>
 </html>
